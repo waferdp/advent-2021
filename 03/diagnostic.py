@@ -15,20 +15,16 @@ class total:
 
 
 def getHigher(total):
-    if total is None:
-        return "1"
-    elif total.one >= total.zero:
+    if total.one >= total.zero:
         return "1"
     else:
         return "0"
 
 def getLower(total):
-    if total is None:
-        return "1"
-    elif total.zero >= total.one:
-        return "1"
-    else:
+    if total.zero <= total.one:
         return "0"
+    else:
+        return "1"
 
 
 def getBitList(str):
@@ -54,17 +50,14 @@ def filter(lines, bit, index):
 def calculateBits(lines, fn):
     remaining = lines.copy()
     length = len(lines[0])
-    bits = "0b"
-    for i in range(length):
+    #bits = "0b"
+    for i in range(0, length):
         totalBit = total()
-        derivate = fn(None)
-        if len(remaining) > 1:
-            calculateBit(totalBit, bitsAtI(remaining, i))
-            derivate = fn(totalBit)
-
+        calculateBit(totalBit, bitsAtI(remaining, i))
+        derivate = fn(totalBit)
         remaining = filter(remaining, derivate, i)
-        bits += derivate
-    return bits
+        if len(remaining) == 1:
+            return remaining[0]
 
 def addLine(total, line):
     bits = getBitList(line)
@@ -78,13 +71,11 @@ def initTotal(firstLine):
         totals.append(total())
     return totals
 
-lines = file.read("test_input.txt")
+lines = file.read("puzzle_input.txt")
 gamma = calculateBits(lines, getHigher)
 epsilon = calculateBits(lines, getLower)
-#epsilon = generateEpsilon(output)
 
 value = int(gamma, 2) * int(epsilon, 2)
-
 
 print(gamma)
 print(epsilon)
