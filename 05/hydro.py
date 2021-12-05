@@ -19,7 +19,7 @@ class Grid:
             found = self.findPoint(point)
             if found is not None:
                 found.vents += 1
-                print("Intersect at " + str(found))
+                #print("Intersect at " + str(found))
             else:
                 self.points.append(point)
 
@@ -36,20 +36,19 @@ def parseLines(lines):
             ventGrid.addLine(ventLine)
         counter += 1
         if counter % 10 == 0:
-            print(counter)
+            print("At line " + str(counter))
 
     intersects = 0
 
     for point in ventGrid.points:
         if point.vents > 1:
             intersects += 1
-            #print(point)
 
     return intersects
 
 def test():
     lines = file.read("test_input.txt")
-    assert(5 == parseLines(lines))
+    assert(12 == parseLines(lines))
 
 
 def run():

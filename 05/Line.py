@@ -10,10 +10,20 @@ class Line:
         self.start = start
         self.end = end
         self.points = []
-        self.build()        
+        if self.isStraight():
+            self.build()        
 
     def isStraight(self):
-        return self.start.x == self.end.x or self.start.y == self.end.y
+        
+        isHorizontal = self.start.x == self.end.x
+        isVertical = self.start.y == self.end.y
+        xDir = self.end.x - self.start.x
+        xDir = xDir/xDir if xDir != 0 else 0
+        yDir = self.end.y - self.start.y
+        yDir = yDir/yDir if yDir != 0 else 0
+        isDiagonal = xDir == yDir
+
+        return isHorizontal or isVertical  or isDiagonal 
 
     def build(self):
         current = self.start
