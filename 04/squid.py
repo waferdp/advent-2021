@@ -16,15 +16,17 @@ class tile:
 
 class bingo:
 
+    index = 0
     rows = []
     checkedRows = []
     columns = []   
     checkedColumns = []
     haswon = False
 
-    def __init__(self):
+    def __init__(self, index):
         self.rows = []
         self.columns = []
+        self.index = index
 
     def build(self):
         width = len(self.rows[0])
@@ -34,7 +36,7 @@ class bingo:
                 column.append(row[i])
             self.columns.append(column)
 
-    def allChecked(self, rowOrColumn):
+    def allChecked(rowOrColumn):
         areChecked = True
         for tile in rowOrColumn:
             if not tile.checked:
@@ -47,14 +49,22 @@ class bingo:
     def any(self):
         return len(self.rows) > 0
         
+    def update(rowOrColumn, number):
+        isBingo = False
+        for tile in rowOrColumn:
+            if tile.number == number:
+                tile.checked = True
+                if bingo.allChecked(rowOrColumn) == True:
+                    isBingo = True
+        return isBingo
+
+
     def draw(self, number):
         isBingo = False
         for row in self.rows:
-            for tile in row:
-                if tile.number == number:
-                    tile.checked = True
-                    if self.allChecked(row) == True:
-                        isBingo = True
+            isBingo += bingo.update(row, number)
+        for column in self.columns:
+            isBingo += bingo.update(column, number)
         return isBingo
 
     def getUnmarkedSum(self):
@@ -69,7 +79,8 @@ def getBoards(inputLines):
     lines = inputLines.copy()
     lines.pop(0)
     boards = []
-    board = bingo()
+    board = bingo(1)
+
     
     for line in lines:
         numbers = line.split()
@@ -81,9 +92,10 @@ def getBoards(inputLines):
         else:
             if board.any():
                 board.build()
+                index = board.index
                 # print(board)
                 boards.append(board)
-                board = bingo()
+                board = bingo(index + 1)
                 
     if board.any():
         board.build()
@@ -99,7 +111,7 @@ def drawNumber(boards, number):
     for board in boards:
         isBingo = board.draw(number)
         if isBingo:
-            print("BINGO! at " + number)
+            print("BINGO! board " + str(board.index) + " at " + number)
             if len(boards) == 1:
                 print("Last board")
                 print(boards[0].getUnmarkedSum() * int(number))
@@ -114,7 +126,7 @@ def drawNumbers(boards, numbers):
         boards = drawNumber(boards, number)
 
 
-lines = file.read("test_input.txt")
+lines = file.read("puzzle_input.txt")
 boards = getBoards(lines)
 numbers = getNumbers(lines)
 drawNumbers(boards, numbers)
