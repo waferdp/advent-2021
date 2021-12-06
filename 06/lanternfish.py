@@ -2,23 +2,38 @@ import readFile as file
 from Fish import Fish
 
 def createFishes(line):
-    fishes = []
+    fishes = {}
     fishAges = line.split(",")
     for fishAge in fishAges:
-        fish = Fish(int(fishAge))
-        fishes.append(fish)
+        parsed = int(fishAge)
+        if parsed in fishes:
+            fishes[parsed] += 1 
+        else:
+            fishes[parsed] = 1
     return fishes
 
-def simulate(fishes):
-    for day in range(0,80):
-        fishesToday = fishes.copy()
-        for fish in fishesToday:
-            aNewFish = fish.nextDay()
-            if aNewFish is not None:
-                fishes.append(aNewFish)
+def cascade(fishes):
+    nextDay = {}
+    nextDay[6] = 0
+    for key in fishes:
+        if key == 0:
+            nextDay[6] += fishes[0]
+            nextDay[8] = fishes[0]
+        elif key == 7:
+            nextDay[6] += fishes[7]
+        else:
+            nextDay[key-1] = fishes[key]
+    return nextDay
+
+def simulate(fishes, days):
+    for day in range(0,days):
+        fishes = cascade(fishes)
         
         #printFishes(fishes)
-    return len(fishes)
+    count = 0
+    for day in fishes:
+        count += fishes[day]
+    return count
 
 def printFishes(fishes):
     string = ""
@@ -26,18 +41,36 @@ def printFishes(fishes):
         string += str(fish) + ","
     print(string)
 
-def test():
-    lines = file.read("test_input.txt")
+def runTest(path, days):
+    lines = file.read(path)
     fishes = createFishes(lines[0])
-    result = simulate(fishes)
+    result = simulate(fishes, days)
+    return result
+ 
+def test2():
+    result = runTest("test_input.txt", 80)
+    print(result)
     assert(5934 == result)
+    print("Test2 OK")
+
+def test3():
+    result = runTest("puzzle_input.txt", 80)
+    print(result)
+    assert(372300 == result)
+    print("Test3 OK")
+
+def test1():
+    result = runTest("test_input.txt", 18)
+    print(result)
+    assert(result == 26)
+    print("Test1 OK")
 
 def run():
-    lines = file.read("puzzle_input.txt")
-    fishes = createFishes(lines[0])
-    result = simulate(fishes)
+    result = runTest("puzzle_input.txt", 256)
     return result
 
-test()
-result =run()
+test1()
+test2()
+test3()
+result = run()
 print(result)
