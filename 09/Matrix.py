@@ -35,24 +35,20 @@ class Matrix:
             return False
 
     def get(self, x, y):
+        if y < 0 or x < 0:
+            return 9
+        if y >= self.height or x >= self.width:
+            return 9
         return self.mat[y][x]
 
     def above(self, x,y):
-        if y == 0:
-            return 10
-        return self.mat[y-1][x]
+        return self.get(x, y-1)
     
     def below(self, x, y):
-        if y + 1 >= self.height:
-            return 10
-        return self.mat[y+1][x]
+        return self.get(x, y+1)
 
     def left(self, x, y):
-        if x == 0:
-            return 10
-        return self.mat[y][x-1]
+        return self.get(x-1, y)
         
     def right(self, x, y):
-        if x +1 >= self.width:
-            return 10
-        return self.mat[y][x+1]
+        return self.get(x+1, y)
