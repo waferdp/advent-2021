@@ -1,4 +1,4 @@
-import functools
+from functools import reduce
 import readFile as file
 from Matrix import Matrix
 from Basin import Basin
@@ -16,16 +16,12 @@ def findLowPoints(matrix: Matrix):
 
 def findThreeLargest(basins):
     three = []
-    for basin in basins:
-        size = len(basin.getVisited())
-        if len(three) < 3:
-            three.append(size)
-        else:
-            for i in range(0, len(three)):
-                compareSize = three[i]
-                if size > compareSize:
-                    three[i] = size
-                    break
+    sizes = list(map(lambda x: x.size(), basins))
+
+    for i in range(3):
+        three.append(max(sizes))
+        sizes.remove(max(sizes))
+    
     return three
 
 
@@ -52,19 +48,20 @@ def test2():
     lines = file.read("test_input.txt")
     mat = Matrix(lines)
     lowPoints = findLowPoints(mat)
-    basins = []
-    for lowPoint in lowPoints:
-        basin = Basin(mat, lowPoint)
-        basin.exploreBasin()
-        basins.append(basin)
+    basins = list(map(lambda l: Basin(mat, l), lowPoints))
+    list(map(lambda b: b.exploreBasin(), basins))
+    # for basin in basins:
+    #     basin = Basin(mat, lowPoint)
+    #     basin.exploreBasin()
+    #     basins.append(basin)
 
-    assert(len(basins[0].getVisited()) == 3)
-    assert(len(basins[1].getVisited()) == 9)
-    assert(len(basins[2].getVisited()) == 14)
-    assert(len(basins[3].getVisited()) == 9)
+    assert(basins[0].size() == 3)
+    assert(basins[1].size() == 9)
+    assert(basins[2].size() == 14)
+    assert(basins[3].size() == 9)
 
     three = findThreeLargest(basins)
-    product = functools.reduce(lambda x,y: x*y, three)
+    product = reduce(lambda x,y: x*y, three)
 
     assert(product == 1134)
 
@@ -72,14 +69,11 @@ def run():
     lines = file.read("puzzle_input.txt")
     mat = Matrix(lines)
     lowPoints = findLowPoints(mat)
-    basins = []
-    for lowPoint in lowPoints:
-        basin = Basin(mat, lowPoint)
-        basin.exploreBasin()
-        basins.append(basin)
+    basins = list(map(lambda l: Basin(mat, l), lowPoints))
+    list(map(lambda b: b.exploreBasin(), basins))
     
     three = findThreeLargest(basins)
-    product = functools.reduce(lambda x,y: x*y, three)
+    product = reduce(lambda x,y: x*y, three)
 
     return product
 

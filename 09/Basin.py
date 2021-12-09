@@ -55,3 +55,10 @@ class Basin:
             for x in self.visited[y]:
                 visited.append(Point2d(x, y, self.matrix.get(x,y)))
         return visited
+
+    def size(self):
+        size = 0
+        for y in self.visited:
+            for x in self.visited[y]:
+                size += 1
+        return size
