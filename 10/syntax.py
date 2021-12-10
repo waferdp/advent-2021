@@ -27,7 +27,7 @@ def getMatch(char):
         return ">"
 
 def parseLine(line):
-    points =0 
+    points = 0 
     stack = []
     lookingFor = ""
     for char in line:
@@ -38,52 +38,66 @@ def parseLine(line):
             if char == lookingFor:
                 lookingFor = stack.pop()
             else:
-                stack = []
                 points += pointsTable[char]
-                break
-    # if len(stack) > 0:
-    #     for char in stack:
-    #         points *= 5
-    #         points += completeTable[char]
+                return []
+    stack.append(lookingFor)
+    return stack 
+
+def calculatePoints(stack):
+    ordered = "".join(stack)[::-1]
+    points = 0
+    for char in ordered:
+        points *= 5
+        points += completeTable[char]
     return points
 
+def getMiddle(points):
+    points.sort()
+    middle = int(len(points) /2)
+    return points[middle]
+
+
 def testLine(line, expected):
-    actual = parseLine(line)
+    actual = "".join(parseLine(line))[::-1]
     assert(expected == actual)
 
 def test1():
-    line = "{([(<{}[<>[]}>{[]{[(<()>"
-    testLine(line, 1197)
+    line = "[({(<(())[]>[[{[]{<()<>>"
+    testLine(line, "}}]])})]")
 
 def test2():
-    line = "[[<[([]))<([[{}[[()]]]"
-    testLine(line, 3)
+    line = "[(()[<>])]({[<{<<[]>>("
+    testLine(line, ")}>]})")
 
 def test3():
-    line = "[{[{({}]{}}([{[{{{}}([]"
-    testLine(line, 57)
+    line = "(((({<>}<{<{<>}{[]{[]{}"
+    testLine(line, "}}>}>))))")
 
 def test4():
-    line = "[<(<(<(<{}))><([]([]()"
-    testLine(line, 3)
+    line = "{<[[]]>}<{[{[{[]{()[[[]"
+    testLine(line, "]]}}]}]}>")
 
 def test5():
-    line = "<{([([[(<>()){}]>(<<{{"
-    testLine(line, 25137)
+    line = "<{([{{}}[<[[[<>{}]]]>[]]"
+    testLine(line, "])}>")
 
 def test6():
     lines = file.read("test_input.txt")
-    points = 0
+    points = []
     for line in lines:
-        points += parseLine(line)
-    assert(points == 26397)
+        stack = parseLine(line)
+        if len(stack) > 0:
+            points.append(calculatePoints(stack))
+    assert(getMiddle(points) == 288957)
 
 def run():
     lines = file.read("puzzle_input.txt")
-    points = 0
+    points = []
     for line in lines:
-        points += parseLine(line)
-    return points
+        stack = parseLine(line)
+        if len(stack) > 0:
+            points.append(calculatePoints(stack))
+    return getMiddle(points)
 
 test1()
 test2()
