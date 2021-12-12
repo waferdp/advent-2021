@@ -26,6 +26,30 @@ class TestGraph(unittest.TestCase):
         edges = graph.findEdges("c", ["start", "A", "c"])
         assert(len(edges) > 0)
 
+    def testStopVisit(self):
+        input = ['start-A', 'start-b', 'A-c', 'A-b', 'b-d', 'A-end', 'b-end']
+        graph = Graph(input)
+        edges = graph.findEdges("A", ["start", "A", "c", "A", "c", "A"])
+        assert(len(edges) == 2)
+
+    def testOnlyFirstSmallCase(self):
+        input = ['start-A', 'start-b', 'A-c', 'A-b', 'b-d', 'A-end', 'b-end']
+        graph = Graph(input)
+        edges = graph.findEdges("A", ["start", "A", "c", "A", "c", "A", "b", "A"])
+        assert(len(edges) == 1)
+        
+    def testFindBug1(self):
+        input = ['start-A', 'start-b', 'A-c', 'A-b', 'b-d', 'A-end', 'b-end']
+        graph = Graph(input)
+        edges = graph.findEdges("A", ["start", "A", "b", "A", "c", "A"])
+        assert(len(edges) == 3)
+
+    def testFindBug1(self):
+        input = ['start-A', 'start-b', 'A-c', 'A-b', 'b-d', 'A-end', 'b-end']
+        graph = Graph(input)
+        edges = graph.findEdges("A", ['start', 'A', 'b', 'A', 'c', 'A', 'c', 'A'])
+        assert(len(edges) == 1)
+        
 
 class Graph:
     nodes = []
@@ -53,12 +77,22 @@ class Graph:
             if reverse not in self.edges:
                 self.edges.append(reverse)
 
+    def filterLowerCase(traversed):
+        hasDoubleSmallCase = len(traversed) > len(set(traversed))
+
+        if hasDoubleSmallCase:
+            return traversed
+        else:
+            return ['start']
+            
+
     def findEdges(self, org, traversed):
         if(org == 'end'):
             return []
-        withOrigin = list(filter(lambda x: x.org == org, self.edges))
         upperCaseAllowed = list(filter(lambda x: x.islower(), traversed))
-        goodEdges = list(filter(lambda x: x.dest not in upperCaseAllowed, withOrigin))
+        lowerCaseAllowedOnce = Graph.filterLowerCase(upperCaseAllowed)
+        withOrigin = list(filter(lambda x: x.org == org, self.edges))
+        goodEdges = list(filter(lambda x: x.dest not in lowerCaseAllowedOnce, withOrigin))
         
         return goodEdges
 

@@ -4,20 +4,20 @@ import readFile as file
 
 class TestPassage(unittest.TestCase):
     def testSmall(self):
-        input = ['start-A', 'start-b', 'A-c', 'A-b', 'b-d', 'A-end', 'b-end']
+        input = ['start-A', 'start-b', 'A-b', 'A-c', 'b-d', 'A-end', 'b-end']
         allPaths = Main.run1(input)
-        assert(allPaths == 10)
+        assert(allPaths == 36)
 
     def testMedium(self):
         input = ['dc-end', 'HN-start', 'start-kj', 'dc-start', 'dc-HN', 'LN-dc', 'HN-end', 'kj-sa', 'kj-HN', 'kj-dc']
         allPaths = Main.run1(input)
-        assert(allPaths == 19)
+        assert(allPaths == 103)
 
     def testLarge(self):
         input = ['fs-end', 'he-DX', 'fs-he', 'start-DX', 'pj-DX', 'end-zg', 'zg-sl', 'zg-pj', 'pj-he']
         input += ['RW-he', 'fs-DX', 'pj-RW', 'zg-RW', 'start-pj', 'he-WI', 'zg-he', 'pj-fs', 'start-RW']
         allPaths = Main.run1(input)
-        assert(allPaths == 226)
+        assert(allPaths == 3509)
 
 class Passage:
     
@@ -50,7 +50,7 @@ class Main:
         return len(allPaths)
 
 if __name__ == '__main__':
-    #unittest.main()
+    # unittest.main()
 
     input = file.read('puzzle_input.txt')
     paths = Main.run1(input)
