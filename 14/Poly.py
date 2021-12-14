@@ -1,26 +1,12 @@
-from typing import Dict
+from typing import DefaultDict, Dict
 import unittest
-import time
 import readFile as file
 
 class TestPoly(unittest.TestCase):
-    def testOneStep(self):
-        input = file.read("test_input.txt")
-        poly = Poly(input)
-        poly.grow(1)
-        assert(poly.polymer == "NCNBCHB")
-
-    def testFourSteps(self):
-        input = file.read("test_input.txt")
-        poly = Poly(input)
-        poly.grow(4)
-        assert(poly.polymer == "NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB")
-
-    def testTenSteps(self):
-        input = file.read("test_input.txt")
-        poly = Poly(input)
-        poly.grow(10)
-        assert(len(poly.polymer) == 3073)
+    def testPairs(self):
+        input = "NNCB"
+        pairs = Poly.findPairs(input)
+        assert(len(pairs) == 3)
 
     def testCount(self):
         input = file.read("test_input.txt")
@@ -34,57 +20,67 @@ class TestPoly(unittest.TestCase):
         diff = Main.run(input, 10)
         assert(diff == 1588)
 
-    # def testRun2(self):        
-    #     input = file.read("test_input.txt")
-    #     start = time.time()
-    #     diff = Main.run(input, 26)
-    #     done = time.time()
-    #     print ("26 steps: " + str(done - start))
-    #     #assert(diff == 1588)
+    def testRun2(self):        
+        input = file.read("test_input.txt")
+        diff = Main.run(input, 40)
+        assert(diff == 2188189693529)
 
 class Poly:
-    instructions = {}
-    polymer = ""
+    polymer : str = ""
+    occurs = {}
 
     def __init__(self, input) -> None:
         self.polymer = input[0]
         self.instructions = self.__findInstructions(input)
-        self.elements = list(set(self.instructions.values())) 
+        pairs = Poly.findPairs(self.polymer)
+        
+        self.occurs = {}
+        for pair in pairs:
+            self.occurs[pair] = self.polymer.count(pair)
 
     def __findInstructions(self, input) -> dict:
         instructions = {}
         for row in input:
             if "->" in row:
-                pair, insert = map(lambda x: x.strip(), row.split("->"))
+                pair, insert = map(lambda x: x.strip(), row.split(" -> "))
                 instructions[pair] = insert
         return instructions
 
     def findTemplate(input):
         return input[0]
 
-    def step(self, template):
-        result = ""
+    def findPairs(template):
+        pairs = []
         for i in range(0, len(template)-1):
-            pair = template[i] + template[i+1]
-            instruction = self.instructions[pair]
-            result += pair[0] + instruction
-        return result + template[-1]
-
+            pairs.append(template[i] + template[i+1])
+        return pairs
+        
     def grow(self, steps):
+        
         for i in range(steps):
-            self.polymer = self.step(self.polymer)
-            #print("Step " + str(i))
+            nextStep = DefaultDict(int)
+            for pair in self.occurs:
+                left, right = pair
+                next = self.instructions[pair]
+                occurs = self.occurs[pair]
+                nextStep[left + next] += occurs
+                nextStep[next + right] += occurs
+            self.occurs = nextStep
         self.count()
 
     def count(self):
-        self.count = {}
-        for element in self.elements:
-            self.count[element] = self.polymer.count(element)
+        counts = DefaultDict(int)
+        for key in self.occurs:
+            left = key[0]
+            counts[left] += self.occurs[key]
+        counts[self.polymer[-1]] += 1
+        self.count = counts
 
         self.reverse = {}
         for c in sorted(self.count, key=self.count.get):
             self.reverse[self.count[c]] = c
-        
+
+
 class Main:
     def run(input, steps):
         poly = Poly(input)
@@ -96,7 +92,7 @@ class Main:
 if __name__ == '__main__':
     unittest.main()
 
-    # input = file.read('puzzle_input.txt')
-    # result = Main.run(input, 40)
-    # print(result)
+    input = file.read('puzzle_input.txt')
+    result = Main.run(input, 40)
+    print(result)
     
