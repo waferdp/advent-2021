@@ -1,34 +1,5 @@
-import unittest
 import readFile as file 
-
-class TestDecode(unittest.TestCase):
-
-    # def testLiteral(self):
-    #     input = 'D2FE28'
-    #     decoder = Decoder(input)
-    #     value = decoder.decode()
-    #     decoded = 
-
-    def testOperator1(self):
-        input = '8A004A801A8002F478'
-        decoded = Main.run1(input)
-        assert(decoded == 16)   
-
-    # def testOperator2(self):
-    #     input = '620080001611562C8802118E34'
-    #     decoded = Main.run1(input)
-    #     assert(decoded == 12)   
-
-    def testOperator3(self):
-        input = 'C0015000016115A2E0802F182340'
-        decoded = Main.run1(input)
-        assert(decoded == 23)   
-
-    def testOperator4(self):
-        input = 'A0016C880162017C3686B18A3D4780'
-        decoded = Main.run1(input)
-        assert(decoded == 31) 
-
+from functools import reduce
 class Decoder:
     hex = ""
     bits = ""
@@ -39,19 +10,45 @@ class Decoder:
         self.versions = []
 
     def decode(self):
-        self.bits = bin(int(self.hex, 16))[2:]
-        while "1" in self.bits:
-            self.nextPacket()
-        return sum(self.versions)
+        if self.hex[0] == '0':
+            self.bits = '0000'
+            self.hex[1:]
+        self.bits += bin(int(self.hex, 16))[2:]
+        return self.nextPacket()
         
 
     def nextPacket(self):
         version, type = self.decodeHeader()
         self.versions.append(version)
-        if type == 4:
+        if type == 0:
+            return sum(self.decodeOperator())
+        elif type == 1:
+            return reduce(lambda x, y: x * y, self.decodeOperator())
+        elif type == 2:
+            return min(self.decodeOperator())
+        elif type == 3:
+            return max(self.decodeOperator())
+        elif type == 4:
             return self.decodeLiteralValue()
+        elif type == 5:
+            first, second = self.decodeOperator()
+            if first > second:
+                return 1
+            else: 
+                return 0
+        elif type == 6:
+            first, second = self.decodeOperator()
+            if first < second:
+                return 1
+            else: 
+                return 0
         else:
-            return self.decodeOperator()
+            first, second = self.decodeOperator()
+            if first == second:
+                return 1
+            else: 
+                return 0
+
 
     def decodeHeader(self):
         version = self.popValueFromBits(3)
@@ -83,22 +80,23 @@ class Decoder:
             length = self.popValueFromBits(15)
             left = len(self.bits)
             while len(self.bits) > left - length and '1' in self.bits :
-                self.nextPacket()
+                result = self.nextPacket()
+                packets.append(result)
         else:
-            packets = self.popValueFromBits(11)
-            for i in range(packets):
-                self.nextPacket()
-        return 
+            amount = self.popValueFromBits(11)
+            for i in range(amount):
+                result = self.nextPacket()
+                packets.append(result)
+        return packets
         
 class Main():
-    def run1(input):
+    def run(input):
         decoder = Decoder(input)
         return decoder.decode()
 
-
 if __name__ == '__main__':
-    #unittest.main()
+    # unittest.main()
 
     input = file.read('puzzle_input.txt')[0]
-    result = Main.run1(input)
+    result = Main.run(input)
     print(result)
