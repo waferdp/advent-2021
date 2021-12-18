@@ -21,14 +21,25 @@ class Node:
         return Node(left, right)
         
     
-    def addFromRight(self, value):
+    def addFromLeft(self, value):
         if type(self.left) is Node:
-            self.addFromRight(value)
+            self.addFromLeft(value)
         else:
             self.left += value
         
-    def addFromLeft(self, value):
+    def addFromRight(self, value):
         if type(self.right) is Node:
-            self.addFromLeft(value)
+            self.addFromRight(value)
         else:
             self.right += value
+
+    def getMagnitude(self):    
+        if type(self.left) is Node:
+            leftValue = 3 * self.left.getMagnitude()
+        else:
+            leftValue = 3 * self.left
+        if type(self.right) is Node:
+            rightValue = 2 * self.right.getMagnitude()
+        else:
+            rightValue = 2 * self.right
+        return leftValue + rightValue
