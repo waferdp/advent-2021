@@ -1,38 +1,5 @@
-import unittest
 import readFile as file
 from Node import Node
-
-class TestSnailFish(unittest.TestCase):
-    def testParse(self):
-        input = '[[[[[9,8],1],2],3],4]'
-        node, rest = SnailFish.parseLine(input)
-        assert(node is not None)
-        assert(str(node) == input)
-
-    def testExplode(self):
-        input = ['[[[[[9,8],1],2],3],4]']
-        snailFish = SnailFish(input)
-        node = snailFish.lines[0]
-        snailFish.explode(node)
-        assert(str(node) == '[[[[0,9],2],3],4]')
-
-    def testSplit(self):
-        input = ['[[[[0,7],4],[15,[0,13]]],[1,1]]']
-        snailFish = SnailFish(input)
-        node = snailFish.lines[0]
-        snailFish.splitNode(node)
-        assert(str(node) == '[[[[0,7],4],[[7,8],[0,13]]],[1,1]]')
-    
-    def testReduce(self):
-        input = ['[[[[4,3],4],4],[7,[[8,4],9]]]', '[1,1]']
-        snailFish = SnailFish(input)
-        snailFish.addLines()
-        assert(str(snailFish.lines[0]) == '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]')
-
-    def testSmall(self):
-        input = file.read('test_input.txt')
-        magnitude = Main.run1(input)
-        assert(magnitude == 4140)
 
 class SnailFish:
     lines = []
@@ -138,5 +105,3 @@ class Main:
         snailFish.addLines()
         return snailFish.lines[0].getMagnitude()
 
-if __name__ == '__main__':
-    unittest.main()

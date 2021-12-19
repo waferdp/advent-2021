@@ -23,13 +23,13 @@ class Node:
     
     def addFromLeft(self, value):
         if type(self.left) is Node:
-            self.addFromLeft(value)
+            self.left.addFromLeft(value)
         else:
             self.left += value
         
     def addFromRight(self, value):
         if type(self.right) is Node:
-            self.addFromRight(value)
+            self.right.addFromRight(value)
         else:
             self.right += value
 
