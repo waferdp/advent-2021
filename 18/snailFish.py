@@ -1,20 +1,19 @@
 import readFile as file
+import itertools
 from Node import Node
 
 class SnailFish:
+    rawLines = []
     lines = []
-    explosion = False
-    split = False
-    reduction = False
+    magnitude = 0
     
     def __init__(self, input) -> None:
+        self.rawLines = input
         self.lines = []
         for line in input:
             node, rest = SnailFish.parseLine(line)
             self.lines.append(node)
-        self.explosion = False
-        self.split = False
-        self.reduction = False          
+        self.magnitude = 0
 
     def parseLine(line):
         while line[0] in ',]':
@@ -36,6 +35,18 @@ class SnailFish:
             self.lines = self.lines[1:]
             self.lines[0] = first
             self.reduceIt(first)
+
+    def permuteLines(self):
+        #var combinations = itertools.combinations(range(100), 2)
+        for i in range (0, len(self.lines)):
+            for j in range(0, len(self.lines)):
+                if i == j:
+                    continue
+                a, rest  = SnailFish.parseLine(self.rawLines[i])
+                b, rest  = SnailFish.parseLine(self.rawLines[j])
+                node = Node(a, b)
+                self.reduceIt(node)
+                self.magnitude = max(self.magnitude, node.getMagnitude())
 
     def reduceIt(self, node):
         change = True
@@ -87,14 +98,14 @@ class SnailFish:
             if self.splitNode(node.left): 
                 return True
         else:
-            if node.left > 10:
+            if node.left > 9:
                 node.left = Node.createFrom(node.left)
                 return True
         if typeRight is Node:
             if self.splitNode(node.right): 
                 return True
         else:
-            if node.right > 10:
+            if node.right > 9:
                 node.right = Node.createFrom(node.right)
                 return True
         return False
@@ -105,3 +116,11 @@ class Main:
         snailFish.addLines()
         return snailFish.lines[0].getMagnitude()
 
+    def run2(input):
+        snailFish = SnailFish(input)
+        snailFish.permuteLines()
+        return snailFish.magnitude
+
+input = file.read('puzzle_input.txt')
+magnitude = Main.run2(input)
+print(magnitude)
