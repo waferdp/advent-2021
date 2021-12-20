@@ -2,7 +2,7 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "./18",
+        ".",
         "-p",
         "test*.py"
     ],
