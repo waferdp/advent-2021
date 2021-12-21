@@ -2,7 +2,7 @@ import unittest
 import readFile as file
 from Matrix import Matrix
 
-from Trench import Trench
+from Trench import *
 
 class TestTrench(unittest.TestCase):
 
@@ -24,11 +24,15 @@ class TestTrench(unittest.TestCase):
         trench.enhanceImage()
         assert(str(trench.matrix) == '.......#.\n.#..#.#..\n#.#...###\n#...##.#.\n#.....#.#\n.#.#####.\n..#.#####\n...##.##.\n....###..\n')
 
-    # def testSneakySmall(self):
-    #     input = file.read('puzzle_input.txt')
-    #     trench = Trench(input)
-    #     trench.matrix = Matrix([0,0,0],[0,1,0], [0,0,0])
-
+    def testRun1(self):
+        input = file.read('test_input.txt')
+        dots = Main.run1(input)
+        assert(dots == 35)
+        
+    def testEnhanceFittyTimes(self):
+        input = file.read('test_input.txt')
+        dots = Main.run2(input)
+        assert(dots == 3351)
 
 if __name__ == '__main__':
       unittest.main()

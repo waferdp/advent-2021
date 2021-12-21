@@ -8,7 +8,7 @@ class Trench:
     def __init__(self, input) -> None:
         self.enhance = self.parseEnhance(input)
         self.matrix = self.parseImage(input)
-        self.matrix.setDefault(int(self.enhance[0]))
+        self.matrix.setDefault(0)
 
     def enhanceImage(self) -> Matrix:
         self.matrix.padMatrix(self.matrix.default)
@@ -18,7 +18,13 @@ class Trench:
                 value = self.matrix.getSquare(x, y)
                 enhanced = int(self.enhance[value])
                 new.set(x,y, enhanced)
-        new.default = 1 if self.matrix.default == 0 else 0
+        
+        new.default = self.getNextDefault()
+        self.matrix = new
+
+    def getNextDefault(self):
+        value = self.matrix.getSquare(-2, -2)
+        return int(self.enhance[value])
 
     def parseEnhance(self, lines):
         enhance = []
@@ -37,10 +43,20 @@ class Trench:
             values.append(line.replace('.', '0').replace('#', '1'))
         return Matrix(values)
 
+class Main:
+    def run1(input):
+        trench = Trench(input)
+        trench.enhanceImage()
+        trench.enhanceImage()
+        return trench.matrix.countDots()
+
+    def run2(input):
+        trench = Trench(input)
+        for i in range(50):
+            trench.enhanceImage()
+        return trench.matrix.countDots()
+
 if __name__ == '__main__':
     input = file.read('puzzle_input.txt')
-    trench = Trench(input)
-    trench.enhanceImage()
-    trench.enhanceImage()
-    dots = trench.matrix.countDots()
+    dots = Main.run2(input)
     print(dots)
