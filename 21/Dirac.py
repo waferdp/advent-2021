@@ -1,4 +1,3 @@
-import unittest
 import readFile as file
 from Player import Player
 from Die import Die
@@ -27,7 +26,7 @@ class Dirac:
         minimumScore = min(map(lambda x: x.score, self.players))
         return minimumScore * self.die.rolls
 
-    def play(self):
+    def practice(self):
         while True:
             for player in self.players:
                 roll = self.die.rollThrice()
@@ -36,10 +35,14 @@ class Dirac:
                     return self.findWinner()
            
 
+    def play(self):
+        pass
+        
+
 class Main:
     def run1(input):
         dirac = Dirac(input)
-        return dirac.play()
+        return dirac.practice()
 
 if __name__ == '__main__':
       input = file.read('puzzle_input.txt')
